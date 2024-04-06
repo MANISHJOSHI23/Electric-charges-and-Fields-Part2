@@ -19,7 +19,7 @@ concurrency:
 env:
   FILE: 'slides.py'  # Source file where scenes are defined
   MANIM: 'manim'  # manim or manimgl - which Manim renderer to use
-  SCENES: 'Introduction WithTeX Outro'  # Space-separated list of scenes to render
+  SCENES: 'Elec_Fld Elec_Fld2 Ex33 Ex34 Ex35 Ex36 Ex37'  # Space-separated list of scenes to render
   USES_TEX: true  # true or false - disabling this will make the action run faster
   DISPLAY: :99  # Do not touch this
 
@@ -33,7 +33,7 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Install Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: pip
@@ -85,6 +85,7 @@ jobs:
           wasysym
           xcolor
           xetex
+          cancel
           xkeyval
 
     - name: Install Python dependencies
@@ -93,7 +94,7 @@ jobs:
     - name: Build HTML
       run: |
         ${{ env.MANIM }} ${{ env.FILE }} ${{ env.SCENES }}
-        manim-slides convert ${{ env.SCENES }} _site/index.html
+        manim-slides convert -ccontrols=true -cprogress=true ${{ env.SCENES }} _site/index.html
 
     - name: Push to gh-pages branch
       if: github.event_name != 'pull_request'
