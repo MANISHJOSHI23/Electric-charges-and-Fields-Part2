@@ -19,7 +19,7 @@ concurrency:
 env:
   FILE: 'slides.py'  # Source file where scenes are defined
   MANIM: 'manim'  # manim or manimgl - which Manim renderer to use
-  SCENES: 'Elec_Fld Elec_Fld2 Ex33 Ex34 Ex35 Ex36 Ex37'  # Space-separated list of scenes to render
+  SCENES: 'Elec_Fld Elec_Fld2 Ex33 Ex34 Ex35 Ex36 Ex37 Ex38 ElecFldLines ElecFldLines2'  # Space-separated list of scenes to render
   USES_TEX: true  # true or false - disabling this will make the action run faster
   DISPLAY: :99  # Do not touch this
 
