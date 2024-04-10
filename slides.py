@@ -4,6 +4,31 @@ from manim import *  # or: from manimlib import *
 
 from manim_slides import Slide
 
+
+def Item(*str,dot = True,font_size = 35,math=False,pw="8cm"):
+    if math:
+        tex = MathTex(*str,font_size=font_size)
+    else:
+        tex = Tex(*str,font_size=font_size,tex_environment=f"{{minipage}}{{{pw}}}")
+    if dot:
+        dot = MathTex("\\cdot").scale(2)
+        dot.next_to(tex[0][0], LEFT, SMALL_BUFF)
+        tex[0].add_to_back(dot)
+    else:
+        dot = MathTex("\\cdot",color=BLACK).scale(2)
+        dot.next_to(tex[0], LEFT, SMALL_BUFF)
+        tex[0].add_to_back(dot)
+    g2 = VGroup()
+    for item in tex:
+        g2.add(item)
+
+    return(g2)
+
+
+def ItemList(*item,buff=MED_SMALL_BUFF):
+    list = VGroup(*item).arrange(DOWN, aligned_edge=LEFT,buff=buff)
+    return(list)
+
 def MyLabeledDot(label_in:Tex| None = None,label_out:Tex| None = None,pos:Vector = DOWN,shift=[0,0,0], point=ORIGIN,radius: float = DEFAULT_DOT_RADIUS,color = WHITE):
         if isinstance(label_in, Tex):
             radius = 0.02 + max(label_in.width, label_in.height) / 2
@@ -94,8 +119,27 @@ class MyDoubLabArrow(MyLabeledLine, DoubleArrow):
     ) -> None:
         super().__init__(buff=0,*args, **kwargs)
 
+def Ray(start,end,ext:float=0,eext:float = 0,pos:float=0.5,color=BLUE):
+    dir_lin = Line(start=start,end=end)
+    dir = dir_lin.get_length()*ext*dir_lin.get_unit_vector()
+    edir = dir_lin.get_length()*eext*dir_lin.get_unit_vector()
+    lin = Line(start=start-edir,end=end+dir,color=color)
+    arrow_start = lin.get_start()+pos*lin.get_length()*lin.get_unit_vector()
+    arrow = Arrow(start=arrow_start-0.1*lin.get_unit_vector(),end=arrow_start+0.1*lin.get_unit_vector(),tip_shape=StealthTip,max_tip_length_to_length_ratio=0.75,color=color)
+    ray = VGroup(lin,arrow)
+    return ray
 
-
+def CurvedRay(start,end,ext:float=0,radius=2,color=RED,rev = False):
+    arc = ArcBetweenPoints(start=start,end=end,radius=radius,color=color)
+    n = int(len(arc.get_all_points())/2)
+    pt = arc.get_all_points()[n]
+    pt2 = arc.get_all_points()[n+1]
+    if rev:
+        arrow = Arrow(start=pt2,end=pt,tip_shape=StealthTip,max_tip_length_to_length_ratio=0.75,color=color)
+    else:
+        arrow = Arrow(start=pt,end=pt2,tip_shape=StealthTip,max_tip_length_to_length_ratio=0.75,color=color)
+    ray = VGroup(arc,arrow)
+    return ray
 
 
 def ir(a,b): # inclusive range, useful for TransformByGlyphMap
@@ -783,4 +827,466 @@ class Ex37(Slide):
         self.next_slide(loop=True)
         self.play(Wiggle(sol_6[-1]))
         self.wait()
+
+
+class Ex38(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Example 28 :", r"A proton enters the uniform electric field produced by the two charged plates shown below. The magnitude of the electric field is $4.0 \times 10^5$ N/C, and the speed of the proton when it enters is $1.5 \times 10^7$ m/s. What distance $d$ has the proton been deflected downward when it leaves the plates?",tex_environment="{minipage}{8 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+
+        pline = MyLabeledLine(Tex(r"$\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +$",font_size=20),pos=0.1*UP,start=2.5*LEFT,end=2*RIGHT,color=RED)
+        nline = MyLabeledLine(Tex(r"$\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -$",font_size=20),pos=0.1*DOWN,start=2.5*LEFT,end=2*RIGHT,color=BLUE).shift(3*DOWN)
+        darrow = MyDoubLabArrow(Tex("12 cm",font_size=30),start=pline.get_start(),end=pline.get_end(),opacity=1,tip_length=0.1).next_to(pline,UP)
+        proton = MyLabeledDot(Tex("+e",font_size=20,color=BLACK),color=PINK).move_to(pline.get_left()).shift(1.5*DOWN)
+        dline = DashedLine(start=pline.get_left()+0.2*LEFT,end=pline.get_right(),color=GREY_A).shift(1.5*DOWN)
+        cline = DashedVMobject(ArcBetweenPoints( dline.get_end()+DOWN,dline.get_start(),radius=11,color=GREEN))
+        dline2 = MyDoubLabArrow(Tex("d",font_size=30),start=dline.get_end(),end=dline.get_end()+DOWN,opacity=1,tip_length=0.1,rot=False).shift(0.2*RIGHT)
+        E = MyLabeledArrow(Tex(r"$\vec{E}$",font_size=20),start= 0.5*UP,end=0.5*DOWN,pos=0.2*RIGHT,rot=False,color=RED).next_to(pline,RIGHT).shift(LEFT+0.8*DOWN)
+        v = MyLabeledArrow(Tex(r"$\vec{v}$",font_size=30),start= 0.5*LEFT,end=0.5*RIGHT,pos=0.2*UP,rot=False,color=YELLOW).next_to(proton,0.5*UP)
+        img = VGroup(pline,nline,E,darrow,dline,cline,proton,v,dline2).next_to(ex_title,RIGHT).align_to(ex_title,UP)
+        path = ArcBetweenPoints( dline.get_end()+DOWN,dline.get_start(),radius=11,color=GREEN)
+
+        self.play(Write(ex_title),Write(img))
+        self.next_slide()
+        self.play(MoveAlongPath(proton,path.reverse_points()),run_time=4)
+        self.next_slide()
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+        sol_1 =  ItemList(Item(r" Given: $E = 4.0 \times 10^5$ N/C, $v = 1.5 \times 10^7$ m/s, ",r"and\\ Plate Length $l=12 $ cm $= 12\times 10^{-2}$ m"),
+                            Item(r"Find: Downward deflection $d=?$"),
+                            Item(r"Motion along x-axis:"),
+                            Item(r"$x_0=0, $ ",r"$u_x = v, $, ", r"$a_x = 0 (\because F_x=0)$",dot=False),
+                            Item(r"$x-x_0 = u_x\times t + \dfrac{1}{2}a_xt^2$ (Using 2nd eq. of Motion)",dot=False),
+                            Item(r"$x = v\times t$ ", r" Or $t=\dfrac{x}{v}$ ....(1)", dot=False),
+                            buff=MED_SMALL_BUFF).next_to(sol_label,DOWN).align_to(sol_label,LEFT)
+        
+        sol_2 =  ItemList( Item(r"Motion along y-axis:"),
+                            Item(r"$y_0=0, $ ",r"$u_y = 0, $", r" $a_y = \dfrac{eE}{m} (\because F_y=eE)$",dot=False),
+                            Item(r"$y-y_0 = u_y\times t + \dfrac{1}{2}a_yt^2$ (Using 2nd eq. of Motion)",dot=False),
+                            buff=MED_SMALL_BUFF)
+        
+        sol_3 =  ItemList( Item(r"$y = \dfrac{1}{2}\dfrac{eE}{m}t^2$ ....(2)", dot=False,pw="6 cm"),
+                          Item(r"Put Value of t from eq(1) to eq(2)",pw="6 cm"),
+                            Item(r"$y = \dfrac{1}{2}\dfrac{eE}{m}\dfrac{x^2}{v^2}$ (eqn of Parabola)", dot=False,pw="6 cm"),
+                            Item(r"$d = \dfrac{1}{2}\dfrac{eE}{m}\dfrac{l^2}{v^2}$", dot=False,pw="6 cm"),
+                            buff=MED_SMALL_BUFF).next_to(img,DOWN).align_to(img,LEFT)
+        self.next_slide()
+        for item in sol_1:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        self.play(FadeOut(ex_title))
+        self.play(VGroup(sol_label,sol_1).animate.to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2))
+        sol_2.next_to(sol_1,DOWN).align_to(sol_1,LEFT)
+        line = Line([0,sol_label.get_y(UP),0],[0,config.bottom[1],0],color=RED).next_to(sol_1,0.1*RIGHT).align_to(sol_1,UP)
+        self.next_slide()
+            
+        for item in sol_2:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+        self.play(Write(line))
+        for item in sol_3:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+
+class ElecFldLines(Slide):
+    def construct(self):
+        title = Title('CHAPTER 1 : ELECTRIC CHARGES AND FILEDS',color=GREEN,match_underline_width_to_text=True )
+        self.add(title)
+        Outline = Tex('Learning Objectives :',color=BLUE).next_to(title,DOWN,buff=0.5).to_corner(LEFT).scale(0.8)
+        self.add(Outline)
+        list = BulletedList('Introduction','Electric Charge','Basic properties of electric charges','Conductors and Insulators','Charging by induction','Coulombs Law',
+                            'Forces between multiple charges','Superposition Principle').scale(0.7).next_to(Outline,DOWN).to_corner(LEFT).shift(0.5*RIGHT)
+        list2 = BulletedList('Electric filed','Electric Field Lines','Electric Dipole and Dipole moment','Electric Field due to an electric dipole',
+                             'Dipole in a Uniform External Field','Electric Flux',"Gauss's Law","Applications of Gauss's Law").scale(0.7).next_to(Outline,DOWN).to_corner(RIGHT)
+        self.play(FadeIn(title, Outline,list,list2))
+        self.next_slide(loop=True)
+        self.play(FocusOn(list2[1]))
+        self.play(Circumscribe(list2[1]))
+        self.next_slide()
+        self.play(RemoveTextLetterByLetter(list2))
+        self.play(RemoveTextLetterByLetter(list))
+        self.play(RemoveTextLetterByLetter(Outline))
+        cur_title = Title(" Electric Field  Lines",match_underline_width_to_text=True, color=GREEN)
+        self.play(ReplacementTransform(title,cur_title))
+        self.next_slide()
+
+        steps = ItemList(Item(r"As mentioned earlier, the charge on an object (the source charge) alters space in the region around it in such a way that when another charged object (the test charge) is placed in that region of space, that test charge experiences an electric force.", r"This region of space around any charge is called Electric Field"),
+                         Item(r"But, How to  pictorially visualize the field?"),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        steps2 = ItemList(Item(r" Let us try to represent $\vec{E}$ due to a point charge pictorially."),
+                         Item(r"Draw vectors pointing along the direction of the electric field with their lengths proportional to the strength (magnitude) of the field at each point."),
+                         Item(r"The vector gets shorter as one goes away from the origin, always pointing radially outward"),
+                         Item(r"There is a more useful way to present the same information.", r" Rather than drawing a large number of increasingly smaller vector arrows,", r"we instead connect all of them together, forming continuous lines and curves"),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+
+        q1 = MyLabeledDot(Tex("+",font_size=35,color=BLACK),color=BLUE)
+        c1 = Circle(1)
+        g1 = VGroup()
+        g2 = VGroup()
+        g3 = VGroup()
+        g4 = VGroup()
+
+        for point in c1.get_all_points():
+            uv = Line(point,2*point).get_unit_vector()
+            a1=Arrow(start=point,end=point+uv,buff=0,color=RED)
+            pt = Dot(point,radius=0.02,color=GREEN_A)
+            #a1.move_to(point).shift(0.5*point)
+            g1.add(a1,pt)
+        
+        c2 = Circle(2)
+
+        for point in c2.get_all_points():
+            uv = Line(point,2*point).get_unit_vector()
+            a2=Arrow(start=point,end=point+0.25*uv,buff=0,color=RED)
+            pt = Dot(point,radius=0.02,color=GREEN_A)
+            g2.add(a2,pt)
+        
+        c3 = Circle(2.25)
+        
+        for point in c3.get_all_points():
+            uv = Line(point,2*point).get_unit_vector()
+            a2=Arrow(start=point,end=point+1/5.0625*uv,buff=0,color=RED)
+            pt = Dot(point,radius=0.02,color=GREEN_A)
+            g3.add(a2,pt)
+        
+        c4 = Circle(2.25+1/5.0625)
+        
+        for point in c4.get_all_points():
+            uv = Line(point,2*point).get_unit_vector()
+            a2=Arrow(start=point,end=point+1/5.99*uv,buff=0,color=RED)
+            pt = Dot(point,radius=0.02,color=GREEN_A)
+            g4.add(a2,pt)
+
+        g6 = VGroup(q1.copy())
+        for point in c1.get_all_points():
+            ray = Ray(start=point,end=2.5*point,color=RED,eext=0.55)
+            g6.add(ray)
+        
+        g5 = VGroup(q1,g1,g2,g3,g4).next_to(cur_title,DOWN).to_edge(RIGHT)
+        fvlbl= Tex(" The vector field of a Positive point charge",font_size=35,tex_environment="{minipage}{5 cm}").next_to(g5,DOWN)
+        fllbl= Tex(" The electric field line diagram of a positive point charge",font_size=35,tex_environment="{minipage}{4.5 cm}").next_to(g6,DOWN).to_edge(LEFT)
+
+        self.play(Write(q1))
+        self.next_slide()
+        for item in steps:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        self.play(FadeOut(steps))
+
+        anm = [steps2[0],VGroup(steps2[1],g1[1]),g1[0],g2[1],VGroup(steps2[2],g2[0]),VGroup(g3[0],g3[1]),VGroup(g4[0],g4[1]),g5,steps2[3][0],steps2[3][1],steps2[3][2]]
+
+        for i in anm:
+            self.play(Write(i))
+            self.next_slide()
+
+        self.play(FadeOut(steps2))
+        self.play(Write(g6.to_edge(LEFT)),Write(fvlbl),Write(fllbl))
+        self.next_slide()
+        self.play(FadeOut(VGroup(g5,fvlbl)),VGroup(g6,fllbl).animate.to_edge(RIGHT,buff=0.1))
+
+        steps3 = ItemList(Item(r" Have we lost the information about the strength or magnitude of the field now, because it was contained in the length of the arrow?"),
+                         Item(r"No. Now the magnitude of the field is represented by the density of field lines."),
+                         Item(r"E is strong near the charge, so the density of field lines is more near the charge and the lines are closer."),
+                         Item(r"Away from the charge, field gets weaker and the density of field lines is less, resulting in well-separated lines."),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        steps4 = ItemList(Item(r" In Figure., the same number of field lines passes through both surfaces (S and S'),",pw="6.5 cm"),
+                         Item(r"but the surface S is larger than surface S' ",pw="6.5 cm"),
+                         Item(r" Therefore, the density of field lines (number of lines per unit area) is larger at the location of S', ", r"indicating that the electric field is stronger at the location of S' than at S.",pw="6.5 cm"),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        img = ImageMobject("eflines.png",).scale(0.8).next_to(cur_title,DOWN).to_corner(RIGHT,buff=0.1)
+        img2 = ImageMobject("eflines2.png").scale(0.9).next_to(cur_title,DOWN).to_corner(RIGHT,buff=0.1)
+
+        steps5 = ItemList(Item(r" Plane Angle ", r"$\theta = \dfrac{\text{arc}}{\text{radius}}$", r"$=\dfrac{\Delta l}{r}$",pw="6.5 cm"),
+                         Item(r"Solid Angle  ", r"$\Delta \Omega = \dfrac{\text{Plane area}}{\text{radius}^2}$", r"$= \dfrac{\Delta S}{r^2}$",pw="6.5 cm"),
+                         buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+
+        steps6 = ItemList(Item(r"Electric Filed at $P_1$: ", r"$E_{P_1}\propto \dfrac{n}{\Delta S_1}$","$\propto \dfrac{n}{\Delta \Omega\  r_{1}^2} $"),
+                         Item(r"Electric Filed at $P_2$: ", r"$E_{P_2}\propto \dfrac{n}{\Delta S_2}$","$\propto \dfrac{n}{\Delta \Omega\ r_{2}^2} $"),
+                         Item(r"Since $n$ and  $\Delta \Omega$ are common, the strength of the field clearly has a $\dfrac{1}{r^2}$ dependence.",pw="6.5 cm"),
+                         buff=MED_LARGE_BUFF).next_to(steps5,DOWN).to_corner(LEFT,buff=0.1)
+        
+        arc = Arc(3,30*DEGREES,-30*DEGREES,color=BLUE)
+        arclbl = Tex(r"$\Delta l$",font_size = 35).next_to(arc,RIGHT)
+        line1 = Line(ORIGIN,arc.get_end(),color=BLUE)
+        linelbl = Tex("$r$",font_size = 35).next_to(line1,DOWN)
+        line2 = Line(ORIGIN,arc.get_start(),color=BLUE)
+        ang = Angle(line1,line2,radius=0.8)
+        anglbl = Tex(r"$\theta$",font_size = 35).next_to(ang,RIGHT)
+        ag = VGroup(line1,line2,arc,ang,arclbl,linelbl,anglbl).next_to(cur_title,DOWN).to_edge(RIGHT)
+
+        el = Ellipse(0.4,2,color=GREEN,fill_opacity=0.6)
+        e2 = Ellipse(0.08,0.4,color=BLUE).shift(12/5*LEFT)
+        elbl =  Tex(r"$\Delta S$",font_size = 35).next_to(el,RIGHT)
+        line3 = Line(3*LEFT,el.get_top())
+        line4 = Line(3*LEFT,el.get_bottom())
+        slbl = Tex(r"$\Delta \Omega$",font_size = 35).move_to(2*LEFT+0.1*UP)
+        line4lbl = Tex("$r$",font_size = 35).next_to(line4,DOWN,buff=0).shift(0.2*UP)
+        sag = VGroup(el,e2, line3,line4,line4lbl,elbl,slbl).rotate(20*DEGREES).next_to(ag,DOWN)
+
+        anm2 = [VGroup(steps5[0][0],ag),steps5[0][1],steps5[0][2],VGroup(steps5[1][0],sag),steps5[1][1],steps5[1][2]]
+
+        for item in steps3:
+            self.play(Write(item))
+            self.next_slide()
+
+        self.play(FadeOut(steps3,g6,fllbl))
+        self.play(FadeIn(img))
+
+        for item in steps4:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+        self.play(FadeOut(steps4,img))
+        self.next_slide()
+        for item in anm2:
+            self.play(Write(item))
+            self.next_slide()
+
+        self.play(FadeIn(img2))
+        self.play(FadeOut(ag,sag))
+        for item in steps6:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+
+        self.play(FadeOut(steps6,img2,steps5))
+        self.next_slide()
+
+        eflines = ItemList(Item(r"The picture of field lines was invented by Faraday", r" to develop an intuitive non-mathematical way of visualising electric fields around charged configurations. ", r" Faraday called them lines of force",pw="13 cm"),
+                         Item(r"Electric field lines are thus a way of pictorially mapping (visualising) the electric field around a configuration of charges.",pw="13 cm"),
+                         Item(r"An electric field line is, in general a curve drawn in such a way that the tangent to it at each point is in the direction of the net field at that point.",pw="13 cm"),
+                         Item(r"The arrow specify the direction of electric field from the two possible directions indicated by a tangent",pw="13 cm"),
+                         Item(r"The denser the electric field line, the stronger the electric field.",pw="13 cm"),
+                         buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        for item in eflines:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+
+        self.wait(2)
+
+
+class ElecFldLines2(Slide):
+    def construct(self):
+        cur_title = Title(" Electric Field  Lines",match_underline_width_to_text=True, color=GREEN)
+        self.add(cur_title)
+        q1 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE)
+        q2 = MyLabeledDot(Tex("$-$",font_size=35,color=BLACK),color=GREEN)
+        c1 = Circle(1)
+
+        g1 = VGroup(q1)
+        for point in c1.get_all_points():
+            ray = Ray(start=point,end=2.5*point,color=RED,eext=0.55)
+            g1.add(ray)
+        
+        g1.to_edge(LEFT)
+        
+        g1lbl = Tex(r"(1) The field lines of a single positive charge are radially outward",tex_environment="{minipage}{5 cm}",font_size = 35).next_to(g1,DOWN)
+        sr1=SurroundingRectangle(VGroup(g1,g1lbl))
+
+        self.play(Write(g1),Write(sr1),run_time=4)
+        self.play(Write(g1lbl))
+        self.next_slide()
+        
+        g2 = VGroup(q2)
+        for point in c1.get_all_points():
+            ray = Ray(start=2.5*point,end=point,color=RED,ext=0.55)
+            g2.add(ray)
+        g2.to_edge(RIGHT)
+        g2lbl = Tex(r"(2) The field lines of a single negative charge are radially inward",tex_environment="{minipage}{5 cm}",font_size = 35).next_to(g2,DOWN)
+        sr2=SurroundingRectangle(VGroup(g2,g2lbl))
+        self.play(Write(g2),Write(sr2),run_time=4)
+        self.play(Write(g2lbl))
+        self.next_slide()
+        self.play(FadeOut(g1,g2,g1lbl,g2lbl,sr1,sr2))
+        self.next_slide()
+
+        q3 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE).shift(2*LEFT)
+        q4 = MyLabeledDot(Tex("$-$",font_size=35,color=BLACK),color=GREEN).shift(3*RIGHT)
+
+        c1 = VGroup()
+
+        for r in [1.2,1.4,1.8,2.4]:
+            c1.add(CurvedRay(q3.get_center(),q4.get_center(),radius=2.5*r,color=RED))
+            c1.add(CurvedRay(q4.get_center(),q3.get_center(),radius=2.5*r,color=RED,rev=True))
+        
+        c1.add(Ray(q3.get_center(),q4.get_center(),color=RED))
+        c1.add(Ray(q3.get_center(),q3.get_center()+LEFT,color=RED))
+        c1.add(Ray(q4.get_center()+RIGHT,q4.get_center(),color=RED))
+
+        c1.add(CurvedRay(q3.get_center()+2*UP+0.5*RIGHT,q3.get_center(),radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q3.get_center(),q3.get_center()+2*DOWN+0.5*RIGHT,radius=2,color=RED))
+        c1.add(CurvedRay(q3.get_center()+2*UP-0.5*RIGHT,q3.get_center(),radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q3.get_center(),q3.get_center()+2*DOWN-0.5*RIGHT,radius=2,color=RED))
+        c1.add(CurvedRay(q3.get_center()+2*UP+1.5*RIGHT,q3.get_center(),radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q3.get_center(),q3.get_center()+2*DOWN+1.5*RIGHT,radius=2,color=RED))
+        c1.add(CurvedRay(q4.get_center(),q4.get_center()+2*UP+0.5*RIGHT,radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q4.get_center()+2*DOWN+0.5*RIGHT,q4.get_center(),radius=2,color=RED))
+        c1.add(CurvedRay(q4.get_center(),q4.get_center()+2*UP-0.5*RIGHT,radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q4.get_center()+2*DOWN-0.5*RIGHT,q4.get_center(),radius=2,color=RED))
+        c1.add(CurvedRay(q4.get_center(),q4.get_center()+2*UP-1.5*RIGHT,radius=2,color=RED,rev=True))
+        c1.add(CurvedRay(q4.get_center()+2*DOWN-1.5*RIGHT,q4.get_center(),radius=2,color=RED))
+
+        c1.add(q3,q4).to_edge(LEFT)
+
+        q5 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE).shift(LEFT)
+        q6 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE).shift(RIGHT)
+
+        c2 = VGroup()
+
+        for r in [1,1.7,2.5]:
+            c2.add(CurvedRay(q6.get_center(),q6.get_center()+1.5*RIGHT+r*DOWN,radius=2,color=RED))
+            c2.add(CurvedRay(q6.get_center()+1.5*RIGHT+r*UP,q6.get_center(),radius=2,color=RED,rev=True))
+            c2.add(CurvedRay(q5.get_center(),q5.get_center()+1.5*LEFT+r*UP,radius=2,color=RED))
+            c2.add(CurvedRay(q5.get_center()+1.5*LEFT+r*DOWN,q5.get_center(),radius=2,color=RED,rev=True))
+        
+        for r in [0.3,0.8]:
+            c2.add(CurvedRay(q6.get_center(),q6.get_center()+r*LEFT+2.5*DOWN,radius=4,color=RED))
+            c2.add(CurvedRay(q6.get_center()+r*LEFT+2.5*UP,q6.get_center(),radius=4,color=RED,rev=True))
+            c2.add(CurvedRay(q5.get_center(),q5.get_center()+r*RIGHT+2.5*UP,radius=4,color=RED))
+            c2.add(CurvedRay(q5.get_center()+r*RIGHT+2.5*DOWN,q5.get_center(),radius=4,color=RED,rev=True))
+        
+
+        c2.add(Ray(q5.get_center(),q5.get_center()+1.5*LEFT,color=RED))
+        c2.add(Ray(q6.get_center(),q6.get_center()+1.5*RIGHT,color=RED))
+        c2.add(q5,q6).to_edge(RIGHT)
+        c1lbl = Tex(r"(3) The field lines of a A dipole (Two equal an opposite charges)",tex_environment="{minipage}{5 cm}",font_size = 35).next_to(c1,DOWN)
+        c2lbl = Tex(r"(4) The field lines of Two identical charges",tex_environment="{minipage}{5 cm}",font_size = 35).next_to(c2,DOWN)
+        sr3=SurroundingRectangle(VGroup(c1,c1lbl))
+        sr4=SurroundingRectangle(VGroup(c2,c2lbl))
+
+        self.play(Write(c1),run_time=4)
+        self.play(Write(c1lbl),Write(sr3))
+        self.next_slide()
+        self.play(Write(c2),run_time=4)
+        self.play(Write(c2lbl),Write(sr4))
+        self.next_slide()
+        self.play(FadeOut(c1,c2,c1lbl,c2lbl,sr3,sr4))
+        new_title = Title("Properties of Electric Field  Lines",match_underline_width_to_text=True, color=GREEN)
+        self.play(ReplacementTransform(cur_title,new_title))
+        self.next_slide()
+
+        prop1= ItemList(Item(r" (1) ", r" Field lines starts from positive charge and end at negative charge.",r" If there is a single charge, they may start or end at infinity.",pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+        group1  = VGroup(c1,g1,g2).scale(0.7).arrange(RIGHT).next_to(prop1,DOWN)
+        anm = [prop1[0][0].set_color(ORANGE), VGroup(prop1[0][1],c1),VGroup(prop1[0][2],g1,g2)]
+        
+        for item in anm:
+            self.play(Write(item))
+            self.wait()
+            self.next_slide()
+
+        self.play(FadeOut(prop1,group1))
+        self.next_slide()
+
+        prop2= ItemList(Item(r" (2) ", r"Magnitude of electric field is repersented by the density of Filed lines." ,r" The denser the electric field line, the stronger the electric field.",pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+        img = ImageMobject("eflines.png",).scale(0.7).next_to(prop2,DOWN)
+        anm = [Write(prop2[0][0].set_color(ORANGE)), Write(prop2[0][1]),FadeIn(img), Write(prop2[0][2]),FadeOut(prop2,img)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+        prop3= ItemList(Item(r" (3) ", r"The tangent at any point of a field line gives the direction of net field at that point." ,pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+        efl = CurvedRay(2*LEFT,2*RIGHT+3*UP,radius=4,color=RED)
+        tan=TangentLine(efl[0],0.25,color=GREEN,length=2).add_tip(tip_shape=StealthTip,tip_length=0.1)
+        dot = Dot(tan.get_center(),radius=0.04)
+
+        
+        img = VGroup(efl,tan,dot,Tex(r"$\vec{E}$",font_size=30).next_to(tan.get_end(),DOWN)).next_to(prop3,DOWN)
+        anm = [Write(prop3[0][0].set_color(ORANGE)), Write(prop3[0][1]),Write(efl),Write(dot),Write(VGroup(tan,img[-1])),FadeOut(prop3,img)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+        prop4= ItemList(Item(r" (4) ", r"When drawing lines, the number of lines is proportional to the amount of electric charge." ,pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+        c1 = Circle(1)
+        q5 = MyLabeledDot(Tex("$+q$",font_size=35,color=BLACK),color=BLUE)
+        img3 = VGroup(q5)
+        for i in range(0,8):
+            ray = Ray(start=c1.get_all_points()[4*i],end=2.2*c1.get_all_points()[4*i],color=RED,eext=0.52)
+            img3.add(ray)
+
+        q6 = MyLabeledDot(Tex("$+2q$",font_size=35,color=BLACK),color=BLUE)
+        img4 = VGroup(q6)
+        for i in range(16):
+            pt = np.cos(i*PI/8)*RIGHT+np.sin(i*PI/8)*UP
+            ray = Ray(start=pt,end=2.2*pt,color=RED,eext=0.52)
+            img4.add(ray)
+
+
+        
+        img3.next_to(prop4,DOWN).to_edge(LEFT)
+        img4.next_to(prop4,DOWN).to_edge(RIGHT)
+        anm = [Write(prop4[0][0].set_color(ORANGE)), Write(prop4[0][1]),Write(img3),Write(img4),FadeOut(prop4,img3,img4)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+        
+        prop5= ItemList(Item(r" (5) ", r"In a charge-free region, electric field lines can be taken to be continuous curves without any breaks." ,pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        anm = [Write(prop5[0][0].set_color(ORANGE)), Write(prop5[0][1]),FadeOut(prop5)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+        prop6= ItemList(Item(r" (6) ", r"Electric field lines do not form close loops.", r" This indicates that +ve and -ve charge can  exist seperately.", pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        anm = [Write(prop6[0][0].set_color(ORANGE)), Write(prop6[0][1]), Write(prop6[0][2]),FadeOut(prop6)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+        prop7= ItemList(Item(r" (7) ", r"Two field lines can never cross each other. ", r"Because, if they did the electric field at the point of intersection will have two directions, which is not possible." ,pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+
+        ef3 = CurvedRay(2*LEFT,2*RIGHT+3*UP,radius=9,color=RED)
+        ef4 = CurvedRay(2*LEFT+3*UP,4*RIGHT+DOWN,radius=10,color=GREEN)
+        tan1=TangentLine(ef3[0],0.4,color=ORANGE,length=2).add_tip(tip_shape=StealthTip,tip_length=0.1)
+        tan2=TangentLine(ef4[0],0.4,color=GOLD,length=2).add_tip(tip_shape=StealthTip,tip_length=0.1)
+
+        
+        pi = Intersection(ef3,ef4).get_center()
+        dot = Dot(pi,radius=0.04)
+
+        
+        img6 = VGroup(ef3,ef4,tan1,tan2,dot,Tex(r"$\vec{E}$",font_size=30).next_to(tan1.get_end(),DOWN)).next_to(prop7,DOWN)
+        anm = [Write(prop7[0][0].set_color(ORANGE)), Write(prop7[0][1]),Write(prop7[0][2]),Write(ef3),Write(ef4),Write(dot),Write(VGroup(tan1,tan2,img6[-1])),FadeOut(prop7,img6)]
+        
+        for item in anm:
+            self.play(item)
+            self.wait()
+            self.next_slide()
+
+
         
