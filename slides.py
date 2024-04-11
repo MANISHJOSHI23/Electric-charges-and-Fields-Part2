@@ -894,6 +894,50 @@ class Ex38(Slide):
                 self.next_slide()
         
 
+class Ex39(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Exercise 1.14 :", r"Figure shows tracks of three charged particles in a uniform electrostatic field. Give the signs of the three charges. ", r"Which particle has the highest charge to mass ratio?",tex_environment="{minipage}{8 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        pline = MyLabeledLine(Tex(r"$\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +\ +$",font_size=20),pos=0.1*UP,start=2.5*LEFT,end=2*RIGHT,color=RED)
+        nline = MyLabeledLine(Tex(r"$\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -\ -$",font_size=20),pos=0.1*DOWN,start=2.5*LEFT,end=2*RIGHT,color=BLUE).shift(3*DOWN)
+        pt = pline.get_left()+1.5*DOWN
+        cline1 = ArcBetweenPoints( pt+0.5*UP,pt+1.2*UP+4.5*RIGHT,radius=13,color=GREEN)
+        cline2 = ArcBetweenPoints( pt,pt+0.5*UP+4.5*RIGHT,radius=15,color=GREEN)
+        cline3 = ArcBetweenPoints( pt+1.5*DOWN+4.5*RIGHT,pt+0.5*DOWN,radius=11,color=GREEN)
+        dline1 = DashedLine(start=pt+0.5*UP,end=pt+0.5*UP+4.5*RIGHT,color=GREY_A)
+        dline2 = DashedLine(start=pt,end=pt+4.5*RIGHT,color=GREY_A)
+        dline3 = DashedLine(start=pt+0.5*DOWN,end=pt+0.5*DOWN+4.5*RIGHT,color=GREY_A)
+        q1 = MyLabeledDot(Tex("1",font_size=20,color=BLACK),color=PINK).move_to(cline1.get_start())
+        q2 = MyLabeledDot(Tex("2",font_size=20,color=BLACK),color=PINK).move_to(cline2.get_start())
+        q3 = MyLabeledDot(Tex("3",font_size=20,color=BLACK),color=PINK).move_to(cline3.get_end())
+        v = MyLabeledArrow(Tex(r"$\vec{v}$",font_size=30),start= 0.5*LEFT,end=0.5*RIGHT,pos=0.2*UP,rot=False,color=YELLOW).next_to(q1,0.5*UP)
+        img = VGroup(pline,nline,cline1,cline2,cline3,q1,q2,q3,dline1,dline2,dline3,v).next_to(ex_title,RIGHT).align_to(ex_title,UP)
+
+        self.play(Write(ex_title),Write(img))
+        self.next_slide()
+        self.play(MoveAlongPath(q1,cline1),run_time=4)
+        self.next_slide()
+        self.play(MoveAlongPath(q2,cline2),run_time=4)
+        self.next_slide()
+        self.play(MoveAlongPath(q3,cline3.reverse_points()),run_time=4)
+        self.next_slide()
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+
+        sol_1 =  ItemList( Item(r"Particles 1 and 2 have negative charges because they are being deflected towards the positive plate of the electrostatic field."),
+                          Item(r"Particle 3 has positive charge because it is being deflected towards the negative plate."),
+                          Item(r"Deflection(d) of charged particle in y-direction is"),
+                           Item(r"$d = \dfrac{1}{2}\dfrac{qE}{m}\dfrac{l^2}{v^2}$ OR $d\propto \dfrac{q}{m}$", dot=False),
+                           Item(r"As the particle 3 suffers maximum deflection in y-direction, so it has highest charge to mass $\dfrac{q}{m}$ ratio."),
+                            buff=MED_SMALL_BUFF).next_to(sol_label,DOWN).align_to(ex_title,LEFT)
+        self.next_slide()
+        for item in sol_1:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+
 class ElecFldLines(Slide):
     def construct(self):
         title = Title('CHAPTER 1 : ELECTRIC CHARGES AND FILEDS',color=GREEN,match_underline_width_to_text=True )
@@ -1250,16 +1294,39 @@ class ElecFldLines2(Slide):
         
         prop5= ItemList(Item(r" (5) ", r"In a charge-free region, electric field lines can be taken to be continuous curves without any breaks." ,pw="13 cm"), buff=MED_LARGE_BUFF
                        ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
-        anm = [Write(prop5[0][0].set_color(ORANGE)), Write(prop5[0][1]),FadeOut(prop5)]
+        
+        q3 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE).shift(2*LEFT)
+        q4 = MyLabeledDot(Tex("$-$",font_size=35,color=BLACK),color=GREEN).shift(3*RIGHT)
+
+        c1 = VGroup()
+        c1.add(CurvedRay(q3.get_center(),0.5*RIGHT+1.3*DOWN,radius=2.5*1.2,color=RED),CurvedRay(0.9*RIGHT+1.25*DOWN,q4.get_center(),radius=2.5*1.2,color=RED))
+        c1.add(CurvedRay(q4.get_center(),q3.get_center(),radius=2.5*1.2,color=RED,rev=True))
+        c1.add(q3,q4)
+        c1.next_to(prop5,DOWN)
+        cross2 = Cross(VGroup(c1[0],c1[1]),scale_factor=0.4)
+
+        anm = [Write(prop5[0][0].set_color(ORANGE)), Write(VGroup(prop5[0][1],c1)),Write(cross2),FadeOut(prop5,c1,cross2)]
+
         
         for item in anm:
             self.play(item)
             self.wait()
             self.next_slide()
 
-        prop6= ItemList(Item(r" (6) ", r"Electric field lines do not form close loops.", r" This indicates that +ve and -ve charge can  exist seperately.", pw="13 cm"), buff=MED_LARGE_BUFF
+        prop6= ItemList(Item(r" (6) ", r"Electric field lines do not form close loops.", r" This follows from the conservative nature of electric field.", pw="13 cm"), buff=MED_LARGE_BUFF
                        ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
-        anm = [Write(prop6[0][0].set_color(ORANGE)), Write(prop6[0][1]), Write(prop6[0][2]),FadeOut(prop6)]
+        
+        q3 = MyLabeledDot(Tex("$+$",font_size=35,color=BLACK),color=BLUE).shift(2*LEFT)
+        q4 = MyLabeledDot(Tex("$-$",font_size=35,color=BLACK),color=GREEN).shift(3*RIGHT)
+
+        c1 = VGroup()
+        c1.add(CurvedRay(q3.get_center(),q4.get_center(),radius=2.5*1.2,color=RED,rev=True))
+        c1.add(CurvedRay(q4.get_center(),q3.get_center(),radius=2.5*1.2,color=RED,rev=True))
+        c1.add(q3,q4)
+        c1.next_to(prop6,DOWN)
+        cross2 = Cross(c1,scale_factor=0.4)
+
+        anm = [Write(prop6[0][0].set_color(ORANGE)), Write(VGroup(prop6[0][1],c1)), Write(prop6[0][2]),Write(cross2),FadeOut(prop6,cross2,c1)]
         
         for item in anm:
             self.play(item)
@@ -1272,21 +1339,122 @@ class ElecFldLines2(Slide):
 
         ef3 = CurvedRay(2*LEFT,2*RIGHT+3*UP,radius=9,color=RED)
         ef4 = CurvedRay(2*LEFT+3*UP,4*RIGHT+DOWN,radius=10,color=GREEN)
-        tan1=TangentLine(ef3[0],0.4,color=ORANGE,length=2).add_tip(tip_shape=StealthTip,tip_length=0.1)
-        tan2=TangentLine(ef4[0],0.4,color=GOLD,length=2).add_tip(tip_shape=StealthTip,tip_length=0.1)
+        tan1=TangentLine(ef3[0],0.42,color=ORANGE,length=2)
+        a1 = MyLabeledArrow(Tex(r"$\vec{E}$",font_size=25),start= tan1.get_center(),end=tan1.get_center()+2*tan1.get_unit_vector(),pos=0.2*DOWN,tip_shape=StealthTip,tip_length=0.1)
+        tan2=TangentLine(ef4[0],0.38,color=GOLD,length=2)
+        a2 = MyLabeledArrow(Tex(r"$\vec{E}$",font_size=25),start= tan2.get_center(),end=tan2.get_center()+2*tan2.get_unit_vector(),pos=0.2*DOWN,tip_shape=StealthTip,tip_length=0.1)
+        dot = Dot(a1.get_start(),radius=0.04)
+
 
         
-        pi = Intersection(ef3,ef4).get_center()
-        dot = Dot(pi,radius=0.04)
-
-        
-        img6 = VGroup(ef3,ef4,tan1,tan2,dot,Tex(r"$\vec{E}$",font_size=30).next_to(tan1.get_end(),DOWN)).next_to(prop7,DOWN)
-        anm = [Write(prop7[0][0].set_color(ORANGE)), Write(prop7[0][1]),Write(prop7[0][2]),Write(ef3),Write(ef4),Write(dot),Write(VGroup(tan1,tan2,img6[-1])),FadeOut(prop7,img6)]
+        img6 = VGroup(ef3,ef4,dot,a1,a2).next_to(prop7,DOWN)
+        cross = Cross(img6,scale_factor=0.3,color=YELLOW)
+        nplbl = Tex("Not Possible ",font_size=30, color=YELLOW).next_to(cross,RIGHT)
+        anm = [Write(prop7[0][0].set_color(ORANGE)), Write(prop7[0][1]),Write(prop7[0][2]),Write(ef3),Write(VGroup(ef4,dot)),Write(a1),Write(a2),Write(VGroup(cross,nplbl)),FadeOut(prop7,img6,cross,nplbl)]
         
         for item in anm:
             self.play(item)
             self.wait()
             self.next_slide()
 
+        prop8= ItemList(Item(r" (8) ", r"Field lines are always perpendicular at the surface of a conductor ", r"but they never enter inside the conductor because there is no electrostatic field inside the conductor." ,pw="13 cm"), buff=MED_LARGE_BUFF
+                       ).next_to(new_title,DOWN,buff=0.8).to_corner(LEFT,buff=0.1)
+        
+        prop8[0][0].set_color(ORANGE)
+
+        img1 = ImageMobject("cond1.png").scale(0.6).next_to(prop8,DOWN)
+        img2 = ImageMobject("cond2.png").scale(0.6).next_to(prop8,DOWN)
+        img3 = ImageMobject("cond3.png").scale(0.6).next_to(prop8,DOWN)
+        ig  = Group(img1,img2,img3)
 
         
+        
+        for i in range(3):
+            self.play(Write(prop8[0][i]))
+            self.play(FadeIn(ig[i]))
+            self.wait()
+            self.next_slide()
+
+class Ex40(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Example 29 :", r"Which among the curves shown in Figure cannot possibly represent electrostatic field lines?",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        self.play(Write(ex_title)) 
+
+
+        self.next_slide()
+        img = Group(ImageMobject("ex39a.png").next_to(ex_title,DOWN),ImageMobject("ex39b.png").scale(0.9).next_to(ex_title,DOWN),ImageMobject("ex39c.png").next_to(ex_title,DOWN),ImageMobject("ex39d.png").next_to(ex_title,DOWN),ImageMobject("ex39e.png").next_to(ex_title,DOWN))
+
+        for item in img:
+            self.play(FadeIn(item))
+            self.next_slide()
+            self.play(FadeOut(item))
+
+
+class Dipole(Slide):
+    def construct(self):
+        title = Title('CHAPTER 1 : ELECTRIC CHARGES AND FILEDS',color=GREEN,match_underline_width_to_text=True )
+        self.add(title)
+        Outline = Tex('Learning Objectives :',color=BLUE).next_to(title,DOWN,buff=0.5).to_corner(LEFT).scale(0.8)
+        self.add(Outline)
+        list = BulletedList('Introduction','Electric Charge','Basic properties of electric charges','Conductors and Insulators','Charging by induction','Coulombs Law',
+                            'Forces between multiple charges','Superposition Principle').scale(0.7).next_to(Outline,DOWN).to_corner(LEFT).shift(0.5*RIGHT)
+        list2 = BulletedList('Electric filed','Electric Field Lines','Electric Dipole and Dipole moment','Electric Field due to an electric dipole',
+                             'Dipole in a Uniform External Field','Electric Flux',"Gauss's Law","Applications of Gauss's Law").scale(0.7).next_to(Outline,DOWN).to_corner(RIGHT)
+        self.play(FadeIn(title, Outline,list,list2))
+        self.next_slide(loop=True)
+        self.play(FocusOn(list2[2]))
+        self.play(Circumscribe(list2[2]))
+        self.next_slide()
+        self.play(RemoveTextLetterByLetter(list2))
+        self.play(RemoveTextLetterByLetter(list))
+        self.play(RemoveTextLetterByLetter(Outline))
+        cur_title = Title(" Electric Dipole and Dipole moment ",match_underline_width_to_text=True, color=GREEN)
+        self.play(ReplacementTransform(title,cur_title))
+        self.next_slide()
+
+        steps1 = ItemList(Item(r"Electric Dipole: ",r"An electric dipole is a pair of two equal and opposite point charges $(+q,-q)$ seperated by a very small distance ($2a$)."),
+                         Item(r"Practically, it is an atom or molecule in which centre of positive charge does not coincides with the centre of negative charge."),
+                         Item(r"Example of polar molecules - HCl, H$_2$O molecules "),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        steps1[0][0].set_color(ORANGE)
+
+        q1 = MyLabeledDot(label_in=Tex("$+$",font_size=35,color=BLACK),label_out=Tex("$+q$",font_size=30,color=BLUE),color=BLUE).shift(2*LEFT)
+        q2 = MyLabeledDot(label_in=Tex("$-$",font_size=35,color=BLACK),label_out=Tex("$-q$",font_size=30,color=GREEN),color=GREEN).shift(3*RIGHT)
+        lin = Line(q1[0].get_right(),q2[0].get_left())
+        pt = MyLabeledDot(label_out=Tex("O",font_size=30),point=lin.get_center())
+        a1 = CurvedArrow(pt.get_top(),pt.get_top()+RIGHT+UP,tip_length=0.1,color=GOLD)
+        a1lbl = Tex("Centre of dipole", font_size=30).move_to(a1.get_tip()).shift(0.2*UP)
+        a2 = MyDoubLabArrow(Tex(r"$a$",font_size=30),start= q1[0].get_right(),end=lin.get_center(),tip_length=0.1,opacity=1).shift(0.2*DOWN)
+        a3 = MyDoubLabArrow(Tex(r"$a$",font_size=30),start= lin.get_center(),end=q2[0].get_left(),tip_length=0.1,opacity=1).shift(0.2*DOWN)
+
+        fig1 = VGroup(q1,q2,lin,pt,a1,a2,a3,a1lbl).next_to(steps1,RIGHT)
+        a4 = MyDoubLabArrow(Tex(r"$2a$",font_size=30),start= q1[0].get_right(),end=q2[0].get_left(),tip_length=0.1,opacity=1).shift(0.2*DOWN)
+        phat = MyLabeledArrow(Tex(r"$\hat{p}$",font_size=30),pos=0.2*UP,start=RIGHT,end=ORIGIN).next_to(fig1,UP,buff=0)
+
+        self.play(Write(fig1))
+        self.next_slide()
+        for item in steps1:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
+        
+        self.play(FadeOut(steps1,a1,a1lbl,pt,a3,a2),Write(a4),Write(phat))
+        self.next_slide()
+
+        steps2 = ItemList(Item(r"Dipole Moment $(\vec{p})$ : ",r"The strength of an electric dipole is measured by a \textbf{vector quantity} known as electric dipole moment ($\vec{p}$)"),
+                         Item(r"Which is the  product of the charge ($q$) and separation ($2a$) between the charges."),
+                         Item(r"$\vec{p} = q\times 2a\ \hat{p} $",dot=False),
+                         Item(r"The \textbf{direction} of electric dipole moment is along the axis of the dipole \textbf{pointing from the negative charge to the positve charge} $(\hat{p})$",pw="13 cm"), 
+                         Item(r"S.I unit of $\vec{p} :$ C m"),
+                         Item(r"Dimensions: $[\vec{p}]=$ [ATL]"),
+                        buff=MED_LARGE_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        steps2[0][0].set_color(ORANGE)
+        steps2[2][0].set_color(YELLOW)
+        for item in steps2:
+            for subitem in item:
+                self.play(Write(subitem))
+                self.next_slide()
