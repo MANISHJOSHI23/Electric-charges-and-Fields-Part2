@@ -3318,37 +3318,331 @@ class DipoleField(Slide):
                 self.play(Write(subitem))
                 self.next_slide()
 
+
+
 class Ex41(Slide):
     def construct(self):
 
-        ex_title = Tex(r"Example 30 :", r" Two charges $\pm 10 \mu$C are placed 5.0 mm apart. Determine the electric field at ", r" (a) a point P on the axis of the dipole 15 cm away from its centre O on the side of the positive charge, as shown in Fig. ", r" and (b) a point Q, 15 cm away from O on a line passing through O and normal to the axis of the dipole, as shown in Fig.",tex_environment="{minipage}{8 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        def Slideshow(list):
+            for item in list:
+                for subitem in item:
+                    self.play(Write(subitem))
+                    self.next_slide()
+
+        ex_title = Tex(r"Example 30 :", r" Two charges $\pm 10 \mu$C are placed 5.0 mm apart. Determine the electric field at ", r" (a) a point P on the axis of the dipole 15 cm away from its centre O on the side of the positive charge, as shown in Fig. ", r" and (b) a point Q, 15 cm away from O on a line passing through O and normal to the axis of the dipole, as shown in Fig.",tex_environment="{minipage}{8.5 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        img1 = ImageMobject("ex40a.png").scale(0.78).to_corner(RIGHT,buff=0.2).align_to(ex_title,UP)
+        img2 = ImageMobject("ex40b.png").scale(0.78).next_to(img1,DOWN,buff=0.1).align_to(img1,RIGHT)
         ex_title[0].set_color(GREEN)
 
+        anm = [Write(ex_title[0:2]),Write(ex_title[2]),FadeIn(img1),Write(ex_title[3]),FadeIn(img2)]
+
+        for item in anm:
+            self.play(item)
+            self.wait(1)
+            self.next_slide()
+
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+
+        sol_1 = ItemList(Item(r"Given: $q =10\ \mu C = 10\times 10^{-6} C$", r"$= 10^{-5}\ C$",pw="6.5 cm"),
+                         Item(r"Length of dipole $2a = 5\ mm $", r"$=5 \times 10^{-3}\ m$",pw="6.5 cm",dot=False),
+                         Item(r"Distance of point P and Q from centre of dipole $r = 15\ cm$", r"$=15 \times 10^{-2}\ m$",pw="6.5 cm",dot=False),
+                         Item(r"Find: Electric field at (a) Axial point and (b) Equitorial point" ,pw="6.5 cm"),
+                         Item(r" p &= q\times 2a \text{ (Magnitude of dipole moment)}\\", r"  &= 10^{-5}\times 5 \times 10^{-3}=5\times 10^{-8} C m ",math=True, pw = "6.5 cm",dot=False),
+                         buff=MED_SMALL_BUFF).next_to(sol_label,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        line = Line([0,sol_label.get_y(UP),0],[0,config.bottom[1],0],color=RED).next_to(sol_1,0.5*RIGHT).align_to(sol_1,UP)
+
+        sol_2 = ItemList(Item(r"(a) Since, $r=60\times a$  OR $r>>a$",pw="6.5 cm"),
+                         Item(r"\therefore E_P &= \dfrac{1}{4\pi\epsilon_0}\dfrac{2\times p}{r^3}\\", 
+                              r" &=  \dfrac{9\times 10^9 \times 2\times 5 \times 10^{-8}}{(15\times 10^{-2})^3}\\",
+                              r" &=  \dfrac{9\times 10^2}{3375\times 10^{-6}}\\",
+                              r" E_P&=  2.67\times 10^{5}\ N/C",math=True,dot=False,pw="6.5 cm"),
+                        Item(r"(Direction from -ve to +ve charge)",dot=False,pw="6.5 cm"),
+                         buff=MED_SMALL_BUFF).next_to(sol_1,RIGHT)
+        Slideshow(sol_1)
+        self.play(FadeOut(img2),Write(line))
+        self.next_slide()
+        Slideshow(sol_2)
+        self.wait(2)
+        self.next_slide()
+        self.play(FadeOut(sol_1),sol_2.animate.next_to(sol_label,DOWN,buff=0.15).to_corner(LEFT,buff=0.1))
+        self.play(line.animate.next_to(sol_2,0.5*RIGHT).align_to(sol_2,UP),FadeIn(img2))
+        sol_3 = ItemList(Item(r"(b) Since, $r>>a$",pw="6.5 cm"),
+                         Item(r"\therefore E_Q &= \dfrac{1}{4\pi\epsilon_0}\dfrac{ p}{r^3}\\", 
+                              r" E_Q&= \dfrac{1}{2}\times E_P\\",
+                              r" E_Q&=  \dfrac{ 2.67\times 10^{5}\ N/C}{2}\\",
+                              r" E_Q&=  1.33\times 10^{5}\ N/C",math=True,dot=False,pw="6.5 cm"),
+                        Item(r"(Direction from +ve to -ve charge)",dot=False,pw="6.5 cm"),
+                         buff=MED_SMALL_BUFF).next_to(sol_2,RIGHT)
+        
+        self.next_slide()
+        Slideshow(sol_3)
+
+
+class Ex42(Slide):
+    def construct(self):
+
+        def Slideshow(list):
+            for item in list:
+                for subitem in item:
+                    self.play(Write(subitem))
+                    self.next_slide()
+
+        ex_title = Tex(r"Example 31 :", r" Two opposite charges each of magnitude $2\ \mu$C are 1 cm apart.", r" Find electric field at a distance of 5 cm from the mid-point on axial line of the dipole.", r" Also find the field on equatorial line at the same distance from mid-point.",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
         for item in ex_title:
             self.play(Write(item))
             self.next_slide()
+
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+
+        sol_1 = ItemList(Item(r"Given: $q =2\ \mu C = 2\times 10^{-6} C$",pw="6 cm"),
+                         Item(r"Length of dipole $2a = 1\ cm $", r"$= 10^{-2}\ m$",pw="6 cm",dot=False),
+                         Item(r"Distance of point from centre of dipole $r = 5\ cm$", r"$=5 \times 10^{-2}\ m$",pw="6 cm",dot=False),
+                         Item(r"Find: Electric field at (a) Axial point and (b) Equitorial point" ,pw="6 cm"),
+                         Item(r" p &= q\times 2a \text{ (Magnitude of dipole moment)}\\", r"  &= 2\times 10^{-6}\times 10^{-2}=2\times 10^{-8} C m ",math=True, pw = "6 cm",dot=False),
+                         buff=MED_SMALL_BUFF).next_to(sol_label,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
         
+        line = Line([0,sol_label.get_y(UP),0],[0,config.bottom[1],0],color=RED).next_to(sol_1,0.5*RIGHT).align_to(sol_1,UP)
+
+        sol_2 = ItemList(Item(r"(a) Since, $r=10\times a$ In this case ",pw="6.5 cm"),
+                         Item(r"\therefore E_{ax} &= \dfrac{1}{4\pi\epsilon_0}\dfrac{2\times p \times r}{(r^2-a^2)^2}\\", 
+                              r" &=  \dfrac{9\times 10^9 \times 2\times 2\times 10^{-8}\times 5\times 10^{-2}}{\left((5\times 10^{-2})^2-(0.5\times 10^{-2})^2\right)^2}\\",
+                              r" &=  \dfrac{18}{(25\times 10^{-4}-0.25\times 10^{-4})^2}\\",
+                              r" &=  \dfrac{18}{(24.75\times 10^{-4})^2}\ N/C\\",
+                              r" &=  \dfrac{18}{612.56\times 10^{-8}}\ N/C\\",
+                              r" E_{ax} &=  2.93\times 10^{6}\ N/C",math=True,dot=False,pw="9 cm"),
+                         buff=MED_SMALL_BUFF).next_to(sol_1,0.7*RIGHT).align_to(sol_label,UP)
+        
+        self.next_slide()
+
+        Slideshow(sol_1)
+        self.play(Write(line))
+        Slideshow(sol_2)
+
+        self.play(FadeOut(sol_1),sol_2.animate.next_to(sol_label,DOWN,buff=0.15).to_corner(LEFT,buff=0.1))
+        self.play(line.animate.next_to(sol_2,0.2*RIGHT).align_to(sol_label,UP))
+        self.next_slide()
+        sol_3 = ItemList(Item(r"(b)\ E_{eq} &= \dfrac{1}{4\pi\epsilon_0}\dfrac{ p}{(r^2+a^2)^{3/2}}\\", 
+                              r" &= \dfrac{9\times 10^9 \times 2\times 10^{-8}}{\left((5\times 10^{-2})^2+(0.5\times 10^{-2})^2\right)^{3/2}}\\",
+                              r" &=  \dfrac{ 180}{(25.25\times 10^{-4})^{3/2}}\\",
+                              r" &=  \dfrac{ 180}{(126.88\times 10^{-6})}\\",
+                              r" E_{eq}&=  1.42\times 10^{6}\ N/C",math=True,dot=False,pw="9 cm"),
+                         buff=MED_SMALL_BUFF).next_to(sol_2,0.4*RIGHT)
+        Slideshow(sol_3)
+
+class Ex43(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Example 32 :", r" Two charges of $+25\times 10^{-9}$ C and $-25\times 10^{-9}$ C are placed 6 m apart. Find the electric field intensity ratio at points 4 m from the centre of the dipole (i) on axial line (ii) on equitorial line.",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        self.play(Write(ex_title))
+        self.next_slide()
+
+        op = VGroup(Tex(r'(a) $\dfrac{1000}{49}$ ',font_size=35),Tex(r'(b) $\dfrac{49}{1000}$ ',font_size=35),Tex(r'(c) $\dfrac{500}{49}$ ',font_size=35),Tex(r'(d) $\dfrac{49}{500}$ ',font_size=35) ).arrange_in_grid(2,2,buff=(4,0.3),col_alignments='ll').next_to(ex_title,DOWN)
+
+        sol_label =Tex('Note: Do not use small dipole formula!! Since, $r<a$ in this case.',font_size=35, color=ORANGE).next_to(op,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(op))
+        self.next_slide()
+        self.play(Write(sol_label)) 
+
+class Ex44(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Example 33 :", r" The electric force on a point charge situated on the axis of a short dipole is $F$. If the charge is shifted along the axis to double the distance, the electric force acting will be",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        self.play(Write(ex_title))
+        self.next_slide()
+
+        op = VGroup(Tex(r'(a) $4F$ ',font_size=35),Tex(r'(b) $\dfrac{F}{2}$ ',font_size=35),Tex(r'(c) $\dfrac{F}{4}$ ',font_size=35),Tex(r'(d) $\dfrac{F}{8}$ ',font_size=35) ).arrange_in_grid(2,2,buff=(4,0.3),col_alignments='ll').next_to(ex_title,DOWN)
+
+        sol_label =Tex('Solution: ',font_size=35, color=ORANGE).next_to(op,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(op))
+        self.next_slide()
+        self.play(Write(sol_label)) 
 
 
-class Try(Slide):
-    def construct(self):     
-        a1 = ArcBetweenPoints(3*RIGHT,2*LEFT+2*UP,radius=3,arc_center=ORIGIN)
-        a2 = ArcBetweenPoints(a1.get_start()+2*DOWN+RIGHT,a1.get_start(),radius=2,arc_center=ORIGIN)
-        a3 = ArcBetweenPoints(a1.get_end(),a2.get_start(),radius=4,arc_center=ORIGIN)
-        img = VGroup(a1,a3)
-        dot = Dot(color=RED)
-        g2 = VGroup(dot,img,a2)
 
-        for i in range(0,a2.get_num_points(),4):
-            point = a2.get_all_points()[i]
-            ray = Ray(start=point,end=1.2*point,color=RED)
-            t = TangentLine(a2,4*i/a2.get_num_points(),length=0.3,color=BLUE)
-            g2.add(ray,t)
+class DipoleInField(Slide):
+    def construct(self):
+        title = Title('CHAPTER 1 : ELECTRIC CHARGES AND FILEDS',color=GREEN,match_underline_width_to_text=True )
+        self.add(title)
+        Outline = Tex('Learning Objectives :',color=BLUE).next_to(title,DOWN,buff=0.5).to_corner(LEFT).scale(0.8)
+        self.add(Outline)
+        list = BulletedList('Introduction','Electric Charge','Basic properties of electric charges','Conductors and Insulators','Charging by induction','Coulombs Law',
+                            'Forces between multiple charges','Superposition Principle').scale(0.7).next_to(Outline,DOWN).to_corner(LEFT).shift(0.5*RIGHT)
+        list2 = BulletedList('Electric filed','Electric Field Lines','Electric Dipole and Dipole moment','Electric Field due to an electric dipole',
+                             'Dipole in a Uniform External Field','Electric Flux',"Gauss's Law","Applications of Gauss's Law").scale(0.7).next_to(Outline,DOWN).to_corner(RIGHT)
+        self.play(FadeIn(title, Outline,list,list2))
+        self.next_slide(loop=True)
+        self.play(FocusOn(list2[4]))
+        self.play(Circumscribe(list2[4]))
+        self.next_slide()
+        self.play(RemoveTextLetterByLetter(list2))
+        self.play(RemoveTextLetterByLetter(list))
+        self.play(RemoveTextLetterByLetter(Outline))
+        cur_title = Title(" Dipole in a Uniform External Field ",match_underline_width_to_text=True, color=GREEN)
+        self.play(ReplacementTransform(title,cur_title))
+        self.next_slide()
+
+        arrowgroup = VGroup()
+
+        for i in range(5):
+            arrowgroup.add(Arrow(start=ORIGIN,end=4.5*RIGHT,tip_length=0.2,color=GREY,buff=0).shift(i*0.8*DOWN))
+
+        arrowgroup.add(Tex(r"$\vec{E}$",font_size=35).next_to(arrowgroup,DR,buff=0).shift(0.7*UP)).set_z_index(1)
+        lin =  MyLabeledLine(label=Tex("$2a$",font_size=30,color=PINK),end=[3.5,-0.6,0],start= [1,-2.8,0],color=PINK,pos=0.12*RIGHT+0.12*DOWN)
+        q1 = always_redraw(lambda:MyLabeledDot(label_in=Tex("$+$",font_size=25,color=BLACK),label_out=Tex("$+q$",font_size=30,color=BLUE),pos=0.2*UP,point=lin.get_end(),color=BLUE))
+        q2 = always_redraw(lambda:MyLabeledDot(label_in=Tex("$-$",font_size=25,color=BLACK),label_out=Tex("$-q$",font_size=30,color=GREEN),color=GREEN,pos=0.2*DOWN,point=lin.get_start()))
+        p  = always_redraw(lambda: MyLabeledArrow(label=Tex(r"$\vec{p}$",font_size=30,color=RED),start=q2.get_center()+1.3*UP,end= q2.get_center()+1.3*UP+lin[0].get_unit_vector(),color=RED,pos=0.25*LEFT+0.2*UP,tip_length=0.2))
+        E1 = always_redraw(lambda:MyLabeledArrow(label=Tex(r"$\vec{F}_{+q}=q\vec{E}$",font_size=30,color=YELLOW),start=q1[0].get_right(),end=q1[0].get_right()+RIGHT,tip_length=0.2,rel_pos=0.8,pos=0.3*UP,color=YELLOW))
+        E2 = always_redraw(lambda:MyLabeledArrow(label=Tex(r"$\vec{F}_{-q}=-q\vec{E}$",font_size=30,color=YELLOW),start=q2[0].get_left(),end=q2[0].get_left()+LEFT,tip_length=0.2,rel_pos=0.8,pos=0.3*UP,color=YELLOW))
+        bline = DashedLine(start=q2[0].get_right(),end=q2[0].get_right()+2.5*RIGHT,stroke_width=2,color=BLUE)
+        pline = MyDashLabeledLine(label=Tex(r"$2a\sin\theta$",font_size=30,color=BLUE),start=q1[0].get_bottom(),end=q1[0].get_bottom()+2.3*DOWN,stroke_width=2,color=BLUE,pos=0.5*RIGHT,rot=False)
+        ang = Angle(bline,lin[0],radius=0.4,quadrant=(1,1),color=GREEN)
+        anglbl = Tex(r"$\theta$",font_size=30,color=GREEN).next_to(ang,RIGHT,buff=0.1)
+        rang = RightAngle(bline,pline[0],length=0.25,quadrant=(-1,-1))
+        fig = VGroup(arrowgroup,lin,q1,q2,p,E1,E2,bline,pline,ang,anglbl,rang).next_to(cur_title,DOWN).to_corner(RIGHT,buff=0.1)
+        sr = SurroundingRectangle(fig,color=GRAY_BROWN)
+        steps1 = ItemList(Item(r"Consider an electric dipole of dipole moment $(\vec{p}) $", r" placed in a uniform electric field $(\vec{E})$",pw="7 cm"),
+                         Item(r"$\vec{p}=q\times 2a\ \hat{p} \rightarrow$ (Dipole moment Vector) ",pw="8 cm",dot=False),
+                         Item(r"Force on $+q$ charge due to electric filed : ",pw="7 cm"),
+                         Item(r"$\vec{F}_{+q}=q\vec{E}$ (Along E)",pw="7 cm",dot=False),
+                         Item(r"Force on $-q$ charge due to electric filed : ",pw="6.7 cm"),
+                         Item(r"$\vec{F}_{-q}=-q\vec{E}$ (Opposite to E)",pw="7 cm",dot=False),
+                         Item(r"Net force on the dipole : ", r"$\vec{F}_{net}=\vec{F}_{+q}+\vec{F}_{-q}=0$",pw="7 cm"),
+                         Item(r"The two forces are equal and opposite and act at different points resulting a net torque $(\vec{\tau})$ (couple) on the dipole. ",pw="7 cm"),
+                        buff=MED_SMALL_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        line = Line([0,steps1.get_y(UP),0],[0,config.bottom[1],0],color=RED).next_to(steps1,RIGHT).align_to(steps1,UP)
+        
+        steps2 = ItemList(Item(r"$|\vec{\tau}|=\text{force}\times \text{perpendicular distance}$"),
+                         Item(r"|\vec{\tau}|&=qE\times 2a\sin\theta\\",r"|\vec{\tau}|&=pE\sin\theta",math=True,dot=False),
+                         Item(r"In vector form: ", r"$\vec{\tau}=\vec{p}\times \vec{E}$"),
+                        buff=MED_SMALL_BUFF).next_to(fig,DOWN,buff=0.4).align_to(fig,LEFT)
+        sr2 = SurroundingRectangle(steps2[1][1])
+        sr3 = SurroundingRectangle(steps2[2][1])
+        anm = [VGroup(steps1[0][0],sr,q1.set_z_index(3),q2.set_z_index(3),lin.set_z_index(2),p.set_z_index(3)),VGroup(steps1[0][1],arrowgroup.set_z_index(1)),steps1[1],VGroup(steps1[2],E1.set_z_index(3)),steps1[3],VGroup(steps1[4],E2.set_z_index(3)),steps1[5],steps1[6],steps1[7],line,
+               VGroup(steps2[0],bline,pline,ang,anglbl,rang),steps2[1][0],VGroup(steps2[1][1],sr2),VGroup(steps2[2],sr3)]
+        
+        steps3 = ItemList(Item(r"Direction of $\vec{\tau} : $ Perpendicular to the plane containing $\vec{p}$ and $\vec{E}$",pw="6.5 cm"),
+                          Item(r"Case 1 : if $\theta = 0^\circ$",color=RED,pw="7 cm"),
+                         Item(r"$|\vec{\tau}| =  pE\sin(0^\circ)=0$", r"  (Stable equilibrium.)",pw="8 cm",dot=False),
+                         Item(r"Case 2 : if $\theta = 90^\circ$",color=RED,pw="7 cm"),
+                         Item(r"$|\vec{\tau}| =  pE\sin(90^\circ)=pE$", r"  (Maximum Torque.)",pw="8 cm",dot=False),
+                         Item(r"Case 3 : if $\theta = 180^\circ$",color=RED,pw="7 cm"),
+                         Item(r"$|\vec{\tau}| =  pE\sin(180^\circ)=0$", r"  (Unstable equilibrium.)",pw="8 cm",dot=False),
+                         Item(r"If the field is not uniform, then the net-force on the dipole will be non-zero.", r" So, in that case there will be both translation and rotational motion of the dipole.",pw="6.5 cm",color=YELLOW),
+                        buff=MED_SMALL_BUFF).next_to(cur_title,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+
+        for item in anm:
+            self.play(Write(item))
+            self.next_slide()
+
+        self.play(FadeOut(steps1),FadeOut(pline,ang,anglbl,rang,bline,sr))
+        self.next_slide()   
+        self.play(Write(steps3[0]))
+        self.next_slide()
+        self.play(Write(steps3[1]))
+        self.next_slide()
+        self.play(lin.animate.set_angle(0*DEGREES).shift(0.9*UP+0.7*LEFT))
+        self.next_slide()
+        self.play(Write(steps3[2]))
+        self.next_slide()
+        self.play(Write(steps3[3]))
+        self.next_slide()
+        self.play(lin.animate.set_angle(0*DEGREES).rotate(90*DEGREES,about_point= lin.get_center()))
+        self.next_slide()
+        self.play(Write(steps3[4]))
+        self.next_slide()
+        self.play(Write(steps3[5]))
+        self.next_slide()
+        self.play(lin[0].animate.rotate(90*DEGREES,about_point= lin.get_center()),lin[1].animate.rotate(-90*DEGREES).shift(0.2*DOWN))
+        self.next_slide()
+        self.play(Write(steps3[6]))
+        self.next_slide()
+        self.play(Write(steps3[7][0]))
+        self.next_slide()
+        self.play(Write(steps3[7][1]))
 
 
-        for point in img.get_all_points():
-            ray = Ray(start=point,end=1.2*point,color=RED)
-            g2.add(ray)
+class Ex45(Slide):
+    def construct(self):
 
-        self.play(Create(g2))
-        self.wait(2)
+        def Slideshow(list):
+            for item in list:
+                for subitem in item:
+                    self.play(Write(subitem))
+                    self.next_slide()
+
+        ex_title = Tex(r"Example 34 :", r" An electric dipole with dipole moment $4 \times 10^{-9}$ C m is aligned at $30^\circ$ with the direction of a uniform electric field of magnitude $5 \times 10^4$ NC$^{-1}$ . Calculate the magnitude of the torque acting on the dipole.",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        for item in ex_title:
+            self.play(Write(item))
+            self.next_slide()
+
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+
+        sol_1 = ItemList(Item(r"Given: $p = 4 \times 10^{-9}$ C m, ", r" $\theta = 30^\circ$, ",r" $E = 5 \times 10^4$ NC$^{-1}$",pw="13 cm"),
+                         Item(r"Find: Magnitude of torque acting on the dipole $(|\vec{\tau}|)$" ,pw="6 cm"),
+                         Item(r" |\vec{\tau}| &= pE\sin\theta\\", 
+                              r"  &= 4\times 10^{-9}\times 5 \times 10^{-4}\times\sin(30^\circ) \\",
+                              r" & = 20\times 10^{-13}\times \dfrac{1}{2}\\",
+                              r" & = 10\times 10^{-13}\\",
+                              r" |\vec{\tau}| & = 10^{-12}\ N m",math=True, pw = "13 cm",dot=False),
+                         buff=MED_SMALL_BUFF).next_to(sol_label,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        self.next_slide()
+        sr = SurroundingRectangle(sol_1[2][-1])
+        Slideshow(sol_1)
+        self.play(Write(sr))
+
+class Ex46(Slide):
+    def construct(self):
+
+        def Slideshow(list):
+            for item in list:
+                for subitem in item:
+                    self.play(Write(subitem))
+                    self.next_slide()
+
+        ex_title = Tex(r"Example 35 :", r" An electric dipole consists of two opposite charges of magnitude $0.2\ \mu$C each, separated by a distance of 2 cm. The dipole is placed in an external field of $2\times 10^5$ N/C. What maximum torque does the field exert on the dipole?",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        for item in ex_title:
+            self.play(Write(item))
+            self.next_slide()
+
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(ex_title,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(sol_label)) 
+
+        sol_1 = ItemList(Item(r"Given: $q = 0.2 \ \mu C = 0.2\times 10^{-6}$ C, ", r" $2a= 2\ cm = 2\times 10^{-2}\ m$, ",r" $E = 2\times 10^5$ NC$^{-1}$",pw="13 cm"),
+                         Item(r"Find: Maximum torque acting on the dipole $\tau_{max}$" ,pw="13 cm"),
+                         Item(r"Torque : $\tau = pE \sin\theta $"),
+                         Item(r"For maximum value of torque, $\sin\theta =1$"),
+                         Item(r"\therefore \tau_{max} &= pE\\ ", 
+                              r" \tau_{max} &= (q\times 2a)\times E\\ ", 
+                              r"  &=  0.2\times 10^{-6}\times 2\times 10^{-2}\times 2\times 10^5 \\",
+                              r" \tau_{max} & = 0.8\times 10^{-3}\ N m",math=True, pw = "13 cm",dot=False),
+                         buff=MED_SMALL_BUFF).next_to(sol_label,DOWN,buff=0.3).to_corner(LEFT,buff=0.1)
+        
+        self.next_slide()
+        sr = SurroundingRectangle(sol_1[4][-1])
+        Slideshow(sol_1)
+        self.play(Write(sr))
+
+class Ex47(Slide):
+    def construct(self):
+
+        ex_title = Tex(r"Example 36 :", r" An electric dipole is placed at an angle $60^\circ$ with an electric field of strength $4\times 10^5$ N/C. It experiences a torque equal to $8\sqrt{3}$ Nm. Calculate the charge on the dipole, if dipole is of length 4 cm.",tex_environment="{minipage}{13 cm}",font_size=35, color=BLUE_C).to_corner(UP,buff=0.2).to_corner(LEFT,buff=0.2)
+        ex_title[0].set_color(GREEN)
+        self.play(Write(ex_title))
+        self.next_slide()
+
+        op = VGroup(Tex(r'(a) $10^{-1}$ C',font_size=35),Tex(r'(b) $10^{-2}$ C',font_size=35),Tex(r'(c) $10^{-3}$ C',font_size=35),Tex(r'(d) $10^{-4}$ C',font_size=35) ).arrange_in_grid(2,2,buff=(4,0.3),col_alignments='ll').next_to(ex_title,DOWN)
+
+        sol_label =Tex('Solution :',font_size=35, color=ORANGE).next_to(op,DOWN).align_to(ex_title,LEFT)
+        self.play(Write(op)) 
+
